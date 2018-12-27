@@ -2,7 +2,7 @@ import logging
 import voluptuous as vol
 import datetime
 from homeassistant.components.climate import (
-    ClimateDevice, STATE_HEAT, STATE_COOL, STATE_IDLE,
+    ClimateDevice, STATE_HEAT, STATE_COOL,
     STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
     SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
     SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE,
@@ -16,7 +16,7 @@ REQUIREMENTS = ['pcomfortcloud==0.0.13']
 CONF_USERNAME = 'username'
 CONF_PASSWORD = 'password'
 
-SCAN_INTERVAL = datetime.timedelta(minutes=5)
+SCAN_INTERVAL = datetime.timedelta(minutes=2)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_USERNAME): cv.string,
@@ -53,10 +53,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 class PanasonicDevice(ClimateDevice):
-    """Representation of a Dyson climate fan."""
+    """Representation of a Panasonic airconditioning."""
 
     def __init__(self, device, api):
-        """Initialize the fan."""
+        """Initialize the device."""
         _LOGGER.debug("Add panasonic device '{0}'".format(device['name']))
         self._api = api
         self._device = device
@@ -103,13 +103,13 @@ class PanasonicDevice(ClimateDevice):
 
     @property
     def is_on(self):
-        """Return the list of supported features."""
+        """Return is device is on."""
         return self._is_on        
 
     @property
     def current_operation(self):
-        """Return the list of supported features."""
-        return OPERATION_LIST.get(self._current_operation)
+        """Return the current operation."""
+        return self._current_operation
     
     @property
     def supported_features(self):
