@@ -37,7 +37,7 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
 
 import pcomfortcloud
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up the Dyson fan components."""
+    """Set up the panasonic cloud components."""
     
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
