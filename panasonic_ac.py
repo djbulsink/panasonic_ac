@@ -76,7 +76,6 @@ class PanasonicDevice(ClimateDevice):
         self._airswing_vert = None
  
     def update(self):
-        
         """Update the state of this climate device."""
         data= self._api.get_device(self._device['id'])
         
@@ -167,8 +166,6 @@ class PanasonicDevice(ClimateDevice):
         return [f.name for f in pcomfortcloud.constants.AirSwingUD ]
 
     def set_temperature(self, **kwargs):
-        
-
         """Set new target temperature."""
         target_temp = kwargs.get(ATTR_TEMPERATURE)
         if target_temp is None:
