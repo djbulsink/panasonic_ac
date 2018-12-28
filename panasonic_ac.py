@@ -65,8 +65,6 @@ class PanasonicDevice(ClimateDevice):
         self._current_operation = 'Cool'
 
         self._unit = TEMP_CELSIUS
-        self._cur_temp = None
-        self._outside_temp = None
         self._target_temp = None
         self._mode = None
         self._eco = None
@@ -82,13 +80,7 @@ class PanasonicDevice(ClimateDevice):
         if data is None:
             _LOGGER.debug("Received no data for device {id}".format(**self._device))
             return
-
-        if data['parameters']['temperatureInside'] != 126:
-            self._cur_temp = data['parameters']['temperatureInside']
-        
-        if data['parameters']['temperatureOutside'] != 126:
-            self._outside_temp = data['parameters']['temperatureOutside']
-        
+       
         if data['parameters']['temperature'] != 126:
             self._target_temp = data['parameters']['temperature']
         
@@ -108,7 +100,9 @@ class PanasonicDevice(ClimateDevice):
     @property
     def current_operation(self):
         """Return the current operation."""
-        return self._current_operation
+        for key, value in OPERATION_LIST.items():
+            if value == self._current_operation:
+                return key
     
     @property
     def supported_features(self):
@@ -131,11 +125,6 @@ class PanasonicDevice(ClimateDevice):
         return TEMP_CELSIUS
 
     @property
-    def current_temperature(self):
-        """Return the current temperature."""
-        return self._cur_temp
-
-    @property
     def target_temperature(self):
         """Return the target temperature."""
         return self._target_temp
@@ -143,7 +132,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def operation_list(self):
         """Return the list of available operation modes."""
-        return list(OPERATION_LIST.values())
+        return list(OPERATION_LIST.keys())
 
     @property
     def current_fan_mode(self):
@@ -194,13 +183,23 @@ class PanasonicDevice(ClimateDevice):
 
     def set_operation_mode(self, operation_mode):
         """Set operation mode."""
-        _LOGGER.debug("Set %s heat mode %s", self.name, operation_mode)
+        _LOGGER.debug("Set %s mode %s", self.name, operation_mode)
         from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
             mode = constants.OperationMode[OPERATION_LIST[operation_mode]]
         )
+
+    def set_swing_mode(self, swing_mode):
+        """Set swing mode."""
+        _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
+        from pcomfortcloud import constants
+        self._api.login()
+        self._api.set_device(
+            self._device['id'],
+            airSwingVertical = constants.AirSwingUD[swing_mode]
+        )     
 
     def turn_on(self):
         """Turn device on."""
@@ -223,9 +222,14 @@ class PanasonicDevice(ClimateDevice):
     @property
     def min_temp(self):
         """Return the minimum temperature."""
-        return 1
+        return 16
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
-        return 37
+        return 30
+
+    @property
+    def target_temp_step(self):
+        """Return the temperature step."""
+        return 0.5
