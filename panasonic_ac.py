@@ -66,6 +66,8 @@ class PanasonicDevice(ClimateDevice):
 
         self._unit = TEMP_CELSIUS
         self._target_temp = None
+        self._cur_temp = None
+        self._outside_temp = None
         self._mode = None
         self._eco = None
 
@@ -83,7 +85,19 @@ class PanasonicDevice(ClimateDevice):
        
         if data['parameters']['temperature'] != 126:
             self._target_temp = data['parameters']['temperature']
-        
+        else:
+            self._target_temp = None
+
+        if data['parameters']['temperatureInside'] != 126:
+            self._cur_temp = data['parameters']['temperatureInside']
+        else:
+            self._cur_temp = None
+
+        if data['parameters']['temperatureOutside'] != 126:
+            self._outside_temp = data['parameters']['temperatureOutside']
+        else:
+            self._outside_temp = None
+
         self._is_on =bool( data['parameters']['power'].value )
         self._current_operation = data['parameters']['mode'].name
         self._current_fan = data['parameters']['fanSpeed'].name
@@ -156,6 +170,16 @@ class PanasonicDevice(ClimateDevice):
         from pcomfortcloud import constants
         return [f.name for f in constants.AirSwingUD ]
 
+    @property
+    def current_temperature(self):
+        """Return the current temperature."""
+        return self._cur_temp
+
+    @property
+    def outside_temperature(self):
+        """Return the current temperature."""
+        return self._outside_temp
+
     def set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temp = kwargs.get(ATTR_TEMPERATURE)
@@ -199,7 +223,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.set_device(
             self._device['id'],
             airSwingVertical = constants.AirSwingUD[swing_mode]
-        )     
+        )
 
     def turn_on(self):
         """Turn device on."""
