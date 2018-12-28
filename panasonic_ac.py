@@ -35,9 +35,9 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
                  | SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE 
                  | SUPPORT_ON_OFF )
 
-import pcomfortcloud
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the panasonic cloud components."""
+    import pcomfortcloud
     
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
@@ -153,7 +153,8 @@ class PanasonicDevice(ClimateDevice):
     @property
     def fan_list(self):
         """Return the list of available fan modes."""
-        return [f.name for f in pcomfortcloud.constants.FanSpeed ]
+        from pcomfortcloud import constants
+        return [f.name for f in constants.FanSpeed ]
 
     @property
     def current_swing_mode(self):
@@ -163,7 +164,8 @@ class PanasonicDevice(ClimateDevice):
     @property
     def swing_list(self):
         """Return the list of available swing modes."""
-        return [f.name for f in pcomfortcloud.constants.AirSwingUD ]
+        from pcomfortcloud import constants
+        return [f.name for f in constants.AirSwingUD ]
 
     def set_temperature(self, **kwargs):
         """Set new target temperature."""
@@ -172,45 +174,50 @@ class PanasonicDevice(ClimateDevice):
             return
         
         _LOGGER.debug("Set %s temperature %s", self.name, target_temp)
+        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = pcomfortcloud.constants.Power.On,
+            power = constants.Power.On,
             temperature = target_temp
         )
 
     def set_fan_mode(self, fan_mode):
         """Set new fan mode."""
         _LOGGER.debug("Set %s focus mode %s", self.name, fan_mode)
+        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            fanSpeed = pcomfortcloud.constants.FanSpeed[fan_mode]
+            fanSpeed = constants.FanSpeed[fan_mode]
         )
 
     def set_operation_mode(self, operation_mode):
         """Set operation mode."""
         _LOGGER.debug("Set %s heat mode %s", self.name, operation_mode)
+        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            mode = pcomfortcloud.constants.OperationMode[OPERATION_LIST[operation_mode]]
+            mode = constants.OperationMode[OPERATION_LIST[operation_mode]]
         )
 
     def turn_on(self):
         """Turn device on."""
+        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = pcomfortcloud.constants.Power.On
+            power = constants.Power.On
         )
 
     def turn_off(self):
         """Turn device on."""
+        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = pcomfortcloud.constants.Power.Off
+            power = constants.Power.Off
         )
 
     @property
