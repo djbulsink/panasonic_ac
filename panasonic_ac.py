@@ -77,7 +77,12 @@ class PanasonicDevice(ClimateDevice):
  
     def update(self):
         """Update the state of this climate device."""
-        data= self._api.get_device(self._device['id'])
+        try:
+            data= self._api.get_device(self._device['id'])
+        except:
+            _LOGGER.debug("Error trying to get device {id} state, probably expired token, trying to update it...".format(**self._device))
+            self._api.login()
+            data = self._api.get_device(self._device['id'])
         
         if data is None:
             _LOGGER.debug("Received no data for device {id}".format(**self._device))
