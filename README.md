@@ -7,7 +7,7 @@ This component uses the library `pcomfortcloud`
 https://github.com/lostfields/python-panasonic-comfort-cloud
 
 ## Usage
-Copy panasonic_ac.py to the `custom_components/climate/` folder. And add the following configuration in `configuration.yml` 
+Copy climate.py to the `custom_components/panasonc_ac/` folder. And add the following configuration in `configuration.yml` 
 
 ```yaml
 climate:
