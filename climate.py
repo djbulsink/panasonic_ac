@@ -1,12 +1,13 @@
 import logging
 import voluptuous as vol
 import datetime
-from homeassistant.components.climate import (
-    ClimateDevice, STATE_HEAT, STATE_COOL,
-    STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
+from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
+from homeassistant.components.climate.const import (
+    STATE_HEAT, STATE_COOL, STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
     SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
     SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE,
-    SUPPORT_ON_OFF, PLATFORM_SCHEMA)
+    SUPPORT_ON_OFF)
+
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 
