@@ -1,6 +1,6 @@
 import logging
 import voluptuous as vol
-import datetime
+from datetime import timedelta
 from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
     STATE_HEAT, STATE_COOL, STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
@@ -11,13 +11,16 @@ from homeassistant.components.climate.const import (
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 
+import pcomfortcloud
+from pcomfortcloud import constants
+
 _LOGGER = logging.getLogger(__name__)
 REQUIREMENTS = ['pcomfortcloud==0.0.13']
 
 CONF_USERNAME = 'username'
 CONF_PASSWORD = 'password'
 
-SCAN_INTERVAL = datetime.timedelta(minutes=2)
+SCAN_INTERVAL = timedelta(seconds=300)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_USERNAME): cv.string,
@@ -28,7 +31,7 @@ OPERATION_LIST = {
     STATE_HEAT: 'Heat',
     STATE_COOL: 'Cool',
     STATE_AUTO: 'Auto',
-    STATE_DRY: "Dry",
+    STATE_DRY: 'Dry',
     STATE_FAN_ONLY: 'Fan' 
     }
 
@@ -38,13 +41,12 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the panasonic cloud components."""
-    import pcomfortcloud
-    
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
 
-    api = pcomfortcloud.Session(username, password, verifySsl=False )
+    api = pcomfortcloud.Session(username, password, verifySsl=False)
     api.login()
+
     # Get panasonic Devices from api.
     _LOGGER.debug("Add panasonic devices")
     add_devices(
@@ -63,7 +65,7 @@ class PanasonicDevice(ClimateDevice):
         self._device = device
         self._current_temp = None
         self._is_on = False
-        self._current_operation = 'Cool'
+        self._current_operation = OPERATION_LIST[STATE_COOL]
 
         self._unit = TEMP_CELSIUS
         self._target_temp = None
@@ -110,7 +112,6 @@ class PanasonicDevice(ClimateDevice):
         self._airswing_hor = data['parameters']['airSwingHorizontal'].name
         self._airswing_vert = data['parameters']['airSwingVertical'].name
         self._eco = data['parameters']['eco'].name
-
 
     @property
     def is_on(self):
@@ -162,7 +163,6 @@ class PanasonicDevice(ClimateDevice):
     @property
     def fan_list(self):
         """Return the list of available fan modes."""
-        from pcomfortcloud import constants
         return [f.name for f in constants.FanSpeed ]
 
     @property
@@ -173,7 +173,6 @@ class PanasonicDevice(ClimateDevice):
     @property
     def swing_list(self):
         """Return the list of available swing modes."""
-        from pcomfortcloud import constants
         return [f.name for f in constants.AirSwingUD ]
 
     @property
@@ -193,7 +192,6 @@ class PanasonicDevice(ClimateDevice):
             return
         
         _LOGGER.debug("Set %s temperature %s", self.name, target_temp)
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
@@ -204,7 +202,6 @@ class PanasonicDevice(ClimateDevice):
     def set_fan_mode(self, fan_mode):
         """Set new fan mode."""
         _LOGGER.debug("Set %s focus mode %s", self.name, fan_mode)
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
@@ -214,7 +211,6 @@ class PanasonicDevice(ClimateDevice):
     def set_operation_mode(self, operation_mode):
         """Set operation mode."""
         _LOGGER.debug("Set %s mode %s", self.name, operation_mode)
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
@@ -224,7 +220,6 @@ class PanasonicDevice(ClimateDevice):
     def set_swing_mode(self, swing_mode):
         """Set swing mode."""
         _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
@@ -233,7 +228,6 @@ class PanasonicDevice(ClimateDevice):
 
     def turn_on(self):
         """Turn device on."""
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
@@ -242,7 +236,6 @@ class PanasonicDevice(ClimateDevice):
 
     def turn_off(self):
         """Turn device on."""
-        from pcomfortcloud import constants
         self._api.login()
         self._api.set_device(
             self._device['id'],
