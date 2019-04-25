@@ -17,6 +17,8 @@ from pcomfortcloud import constants
 _LOGGER = logging.getLogger(__name__)
 REQUIREMENTS = ['pcomfortcloud==0.0.13']
 
+DOMAIN = 'panasonic_ac'
+
 CONF_USERNAME = 'username'
 CONF_PASSWORD = 'password'
 
@@ -49,10 +51,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     # Get panasonic Devices from api.
     _LOGGER.debug("Add panasonic devices")
-    add_devices(
-        [PanasonicDevice(device, api)
-         for device in api.get_devices()], True
-    )
+    add_devices([PanasonicDevice(device, api) for device in api.get_devices()])
 
 
 class PanasonicDevice(ClimateDevice):
