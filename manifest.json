@@ -1,0 +1,8 @@
+{
+  "domain": "panasonic_ac",
+  "name": "Panasonic AC",
+  "documentation": "https://github.com/djbulsink/panasonic_ac/",
+  "dependencies": [],
+  "codeowners": ["Djbulsink"],
+  "requirements": ["pcomfortcloud==0.0.13"]
+}
