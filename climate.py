@@ -11,9 +11,6 @@ from homeassistant.components.climate.const import (
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 
-import pcomfortcloud
-from pcomfortcloud import constants
-
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'panasonic_ac'
@@ -40,7 +37,10 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
                  | SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE 
                  | SUPPORT_ON_OFF )
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
+def setup_platform(hass, config, add_entities, discovery_info=None):
+    import pcomfortcloud
+    from pcomfortcloud import constants
+
     """Set up the panasonic cloud components."""
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
@@ -50,13 +50,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     # Get panasonic Devices from api.
     _LOGGER.debug("Add panasonic devices")
-    add_devices([PanasonicDevice(device, api) for device in api.get_devices()])
+    add_entities([PanasonicDevice(device, api) for device in api.get_devices()], True)
 
 
 class PanasonicDevice(ClimateDevice):
     """Representation of a Panasonic airconditioning."""
 
     def __init__(self, device, api):
+        import pcomfortcloud
+        from pcomfortcloud import constants
+
         """Initialize the device."""
         _LOGGER.debug("Add panasonic device '{0}'".format(device['name']))
         self._api = api
