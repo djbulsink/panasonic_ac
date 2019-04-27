@@ -15,7 +15,6 @@ import pcomfortcloud
 from pcomfortcloud import constants
 
 _LOGGER = logging.getLogger(__name__)
-REQUIREMENTS = ['pcomfortcloud==0.0.13']
 
 DOMAIN = 'panasonic_ac'
 
