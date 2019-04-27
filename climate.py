@@ -4,7 +4,7 @@ from datetime import timedelta
 from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
     STATE_HEAT, STATE_COOL, STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
     SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE,
     SUPPORT_ON_OFF)
 
