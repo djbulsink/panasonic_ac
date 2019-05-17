@@ -1,21 +1,19 @@
 import logging
 import voluptuous as vol
 from datetime import timedelta
-from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
+
+from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
+
 from homeassistant.components.climate.const import (
     STATE_HEAT, STATE_COOL, STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
     SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE,
     SUPPORT_ON_OFF)
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 
-import pcomfortcloud
-from pcomfortcloud import constants
-
 _LOGGER = logging.getLogger(__name__)
-REQUIREMENTS = ['pcomfortcloud==0.0.13']
 
 DOMAIN = 'panasonic_ac'
 
@@ -41,7 +39,10 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
                  | SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE 
                  | SUPPORT_ON_OFF )
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
+def setup_platform(hass, config, add_entities, discovery_info=None):
+    import pcomfortcloud
+    from pcomfortcloud import constants
+
     """Set up the panasonic cloud components."""
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
@@ -51,17 +52,24 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     # Get panasonic Devices from api.
     _LOGGER.debug("Add panasonic devices")
-    add_devices([PanasonicDevice(device, api) for device in api.get_devices()])
+    
+    devices = []
+    for device in api.get_devices():
+        _LOGGER.debug("Setting up %s ...", device)
+        devices.append(PanasonicDevice(device, api, constants))
+
+    add_entities(devices, True)
 
 
 class PanasonicDevice(ClimateDevice):
     """Representation of a Panasonic airconditioning."""
 
-    def __init__(self, device, api):
+    def __init__(self, device, api, constants):
         """Initialize the device."""
         _LOGGER.debug("Add panasonic device '{0}'".format(device['name']))
         self._api = api
         self._device = device
+        self._constants = constants
         self._current_temp = None
         self._is_on = False
         self._current_operation = OPERATION_LIST[STATE_COOL]
@@ -162,7 +170,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def fan_list(self):
         """Return the list of available fan modes."""
-        return [f.name for f in constants.FanSpeed ]
+        return [f.name for f in self._constants.FanSpeed ]
 
     @property
     def current_swing_mode(self):
@@ -172,7 +180,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def swing_list(self):
         """Return the list of available swing modes."""
-        return [f.name for f in constants.AirSwingUD ]
+        return [f.name for f in self._constants.AirSwingUD ]
 
     @property
     def current_temperature(self):
@@ -194,7 +202,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = constants.Power.On,
+            power = self._constants.Power.On,
             temperature = target_temp
         )
 
@@ -204,7 +212,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            fanSpeed = constants.FanSpeed[fan_mode]
+            fanSpeed = self._constants.FanSpeed[fan_mode]
         )
 
     def set_operation_mode(self, operation_mode):
@@ -213,7 +221,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            mode = constants.OperationMode[OPERATION_LIST[operation_mode]]
+            mode = self._constants.OperationMode[OPERATION_LIST[operation_mode]]
         )
 
     def set_swing_mode(self, swing_mode):
@@ -222,7 +230,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            airSwingVertical = constants.AirSwingUD[swing_mode]
+            airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
 
     def turn_on(self):
@@ -230,7 +238,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = constants.Power.On
+            power = self._constants.Power.On
         )
 
     def turn_off(self):
@@ -238,7 +246,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.login()
         self._api.set_device(
             self._device['id'],
-            power = constants.Power.Off
+            power = self._constants.Power.Off
         )
 
     @property
