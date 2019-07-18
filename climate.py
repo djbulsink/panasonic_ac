@@ -80,7 +80,7 @@ class PanasonicDevice(ClimateDevice):
         self._constants = constants
         self._current_temp = None
         self._is_on = False
-        self._current_operation = OPERATION_LIST[STATE_COOL]
+        self._current_operation = OPERATION_LIST[HVAC_MODE_COOL]
 
         self._unit = TEMP_CELSIUS
         self._target_temp = None
