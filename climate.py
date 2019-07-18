@@ -188,7 +188,7 @@ class PanasonicDevice(ClimateDevice):
         return self._airswing_hor
 
     @property
-    def swing_list(self):
+    def swing_modes(self):
         """Return the list of available swing modes."""
         return [f.name for f in self._constants.AirSwingUD ]
 
