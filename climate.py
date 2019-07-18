@@ -28,6 +28,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 OPERATION_LIST = {
+    HVAC_MODE_OFF: 'Off',
     HVAC_MODE_HEAT: 'Heat',
     HVAC_MODE_COOL: 'Cool',
     HVAC_MODE_HEAT_COOL: 'Auto',
@@ -162,6 +163,9 @@ class PanasonicDevice(ClimateDevice):
     @property
     def hvac_mode(self):
         """Return the current operation."""
+        if not self._is_on:
+            return HVAC_MODE_OFF
+
         for key, value in OPERATION_LIST.items():
             if value == self._hvac_mode:
                 return key
@@ -230,11 +234,17 @@ class PanasonicDevice(ClimateDevice):
     def set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
         _LOGGER.debug("Set %s mode %s", self.name, hvac_mode)
+        if hvac_mode == HVAC_MODE_OFF:
+            self._api.set_device(
+                self._device['id'],
+                power = self._constants.Power.Off
+            )
+        else:
 
-        self._api.set_device(
-            self._device['id'],
-            mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
-        )
+            self._api.set_device(
+                self._device['id'],
+                mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
+            )
 
     @api_call_login
     def set_swing_mode(self, swing_mode):
