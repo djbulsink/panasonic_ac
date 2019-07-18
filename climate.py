@@ -2,23 +2,21 @@ import logging
 import voluptuous as vol
 from datetime import timedelta
 
+import homeassistant.helpers.config_validation as cv
+
 from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
 
 from homeassistant.components.climate.const import (
-    STATE_HEAT, STATE_COOL, STATE_AUTO, STATE_DRY, STATE_FAN_ONLY,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
-    SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE,
-    SUPPORT_ON_OFF)
+    HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
+    HVAC_MODE_DRY, HVAC_MODE_FAN_ONLY, HVAC_MODE_OFF,
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE)
 
-import homeassistant.helpers.config_validation as cv
-from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
+from homeassistant.const import (
+    TEMP_CELSIUS, ATTR_TEMPERATURE, CONF_USERNAME, CONF_PASSWORD)
 
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'panasonic_ac'
-
-CONF_USERNAME = 'username'
-CONF_PASSWORD = 'password'
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
@@ -28,17 +26,17 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 OPERATION_LIST = {
-    STATE_HEAT: 'Heat',
-    STATE_COOL: 'Cool',
-    STATE_AUTO: 'Auto',
-    STATE_DRY: 'Dry',
-    STATE_FAN_ONLY: 'Fan' 
+    HVAC_MODE_HEAT: 'Heat',
+    HVAC_MODE_COOL: 'Cool',
+    HVAC_MODE_HEAT_COOL: 'Auto',
+    HVAC_MODE_DRY: 'Dry',
+    HVAC_MODE_FAN_ONLY: 'Fan'
     }
 
-SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
-                 | SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE 
-                 | SUPPORT_ON_OFF )
-
+SUPPORT_FLAGS = (
+    SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE |
+    SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE |
+    SUPPORT_ON_OFF )
 
 def api_call_login(func):
     def wrapper_call( *args, **kwargs):
@@ -48,7 +46,6 @@ def api_call_login(func):
             args[0]._api.login()
             func( *args, **kwargs)
     return wrapper_call
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     import pcomfortcloud
@@ -63,14 +60,13 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     # Get panasonic Devices from api.
     _LOGGER.debug("Add panasonic devices")
-    
+
     devices = []
     for device in api.get_devices():
         _LOGGER.debug("Setting up %s ...", device)
         devices.append(PanasonicDevice(device, api, constants))
 
     add_entities(devices, True)
-
 
 class PanasonicDevice(ClimateDevice):
     """Representation of a Panasonic airconditioning."""
@@ -95,7 +91,7 @@ class PanasonicDevice(ClimateDevice):
         self._current_fan = None
         self._airswing_hor = None
         self._airswing_vert = None
- 
+
     def update(self):
         """Update the state of this climate device."""
         try:
@@ -104,11 +100,11 @@ class PanasonicDevice(ClimateDevice):
             _LOGGER.debug("Error trying to get device {id} state, probably expired token, trying to update it...".format(**self._device))
             self._api.login()
             data = self._api.get_device(self._device['id'])
-        
+
         if data is None:
             _LOGGER.debug("Received no data for device {id}".format(**self._device))
             return
-       
+
         if data['parameters']['temperature'] != 126:
             self._target_temp = data['parameters']['temperature']
         else:
@@ -134,7 +130,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def is_on(self):
         """Return is device is on."""
-        return self._is_on        
+        return self._is_on
 
     @property
     def current_operation(self):
@@ -142,7 +138,7 @@ class PanasonicDevice(ClimateDevice):
         for key, value in OPERATION_LIST.items():
             if value == self._current_operation:
                 return key
-    
+
     @property
     def supported_features(self):
         """Return the list of supported features."""
@@ -209,9 +205,9 @@ class PanasonicDevice(ClimateDevice):
         target_temp = kwargs.get(ATTR_TEMPERATURE)
         if target_temp is None:
             return
-        
+
         _LOGGER.debug("Set %s temperature %s", self.name, target_temp)
-        
+
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On,
@@ -222,7 +218,7 @@ class PanasonicDevice(ClimateDevice):
     def set_fan_mode(self, fan_mode):
         """Set new fan mode."""
         _LOGGER.debug("Set %s focus mode %s", self.name, fan_mode)
-    
+
         self._api.set_device(
             self._device['id'],
             fanSpeed = self._constants.FanSpeed[fan_mode]
