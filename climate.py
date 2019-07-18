@@ -41,12 +41,12 @@ SUPPORT_FLAGS = (
     SUPPORT_ON_OFF )
 
 def api_call_login(func):
-    def wrapper_call( *args, **kwargs):
+    def wrapper_call(*args, **kwargs):
         try:
-            func( *args, **kwargs)
+            func(*args, **kwargs)
         except:
             args[0]._api.login()
-            func( *args, **kwargs)
+            func(*args, **kwargs)
     return wrapper_call
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
