@@ -80,7 +80,7 @@ class PanasonicDevice(ClimateDevice):
         self._constants = constants
         self._current_temp = None
         self._is_on = False
-        self._current_operation = OPERATION_LIST[HVAC_MODE_COOL]
+        self._hvac_mode = OPERATION_LIST[HVAC_MODE_COOL]
 
         self._unit = TEMP_CELSIUS
         self._target_temp = None
@@ -122,7 +122,7 @@ class PanasonicDevice(ClimateDevice):
             self._outside_temp = None
 
         self._is_on =bool( data['parameters']['power'].value )
-        self._current_operation = data['parameters']['mode'].name
+        self._hvac_mode = data['parameters']['mode'].name
         self._current_fan = data['parameters']['fanSpeed'].name
         self._airswing_hor = data['parameters']['airSwingHorizontal'].name
         self._airswing_vert = data['parameters']['airSwingVertical'].name
@@ -136,10 +136,10 @@ class PanasonicDevice(ClimateDevice):
 
     # TODO
     @property
-    def current_operation(self):
+    def hvac_mode(self):
         """Return the current operation."""
         for key, value in OPERATION_LIST.items():
-            if value == self._current_operation:
+            if value == self._hvac_mode:
                 return key
 
     @property
