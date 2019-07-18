@@ -36,9 +36,8 @@ OPERATION_LIST = {
     }
 
 SUPPORT_FLAGS = (
-    SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE |
-    SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE |
-    SUPPORT_ON_OFF )
+    SUPPORT_TARGET_TEMPERATURE |
+    SUPPORT_FAN_MODE)
 
 def api_call_login(func):
     def wrapper_call(*args, **kwargs):
