@@ -128,11 +128,13 @@ class PanasonicDevice(ClimateDevice):
         self._airswing_vert = data['parameters']['airSwingVertical'].name
         self._eco = data['parameters']['eco'].name
 
+    # TODO removed (implement HVAC_MODE_HEAT + HVAC_MODE_OFF instead)
     @property
     def is_on(self):
         """Return is device is on."""
         return self._is_on
 
+    # TODO
     @property
     def current_operation(self):
         """Return the current operation."""
@@ -244,6 +246,7 @@ class PanasonicDevice(ClimateDevice):
             airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
 
+    # TODO remove in favor of set_preset_mode
     @api_call_login
     def turn_on(self):
         """Turn device on."""
@@ -252,12 +255,21 @@ class PanasonicDevice(ClimateDevice):
             power = self._constants.Power.On
         )
 
+    # TODO remove in favor of set_preset_mode
     @api_call_login
     def turn_off(self):
         """Turn device on."""
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.Off
+        )
+
+    # TODO to be implemented
+    @api_call_login
+    def set_preset_mode(self):
+        self._api.set_device(
+            self._device['id'],
+            # TODO
         )
 
     @property
