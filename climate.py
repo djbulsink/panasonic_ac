@@ -61,7 +61,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     api.login()
 
     # Get panasonic Devices from api.
-    _LOGGER.debug("Add panasonic devices")
+    _LOGGER.debug("Adding panasonic devices")
 
     devices = []
     for device in api.get_devices():
