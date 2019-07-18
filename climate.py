@@ -39,6 +39,17 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE
                  | SUPPORT_OPERATION_MODE | SUPPORT_SWING_MODE 
                  | SUPPORT_ON_OFF )
 
+
+def api_call_login(func):
+    def wrapper_call( *args, **kwargs):
+        try:
+            func( *args, **kwargs)
+        except:
+            args[0]._api.login()
+            func( *args, **kwargs)
+    return wrapper_call
+
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     import pcomfortcloud
     from pcomfortcloud import constants
@@ -192,6 +203,7 @@ class PanasonicDevice(ClimateDevice):
         """Return the current temperature."""
         return self._outside_temp
 
+    @api_call_login
     def set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temp = kwargs.get(ATTR_TEMPERATURE)
@@ -199,51 +211,53 @@ class PanasonicDevice(ClimateDevice):
             return
         
         _LOGGER.debug("Set %s temperature %s", self.name, target_temp)
-        self._api.login()
+        
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On,
             temperature = target_temp
         )
 
+    @api_call_login
     def set_fan_mode(self, fan_mode):
         """Set new fan mode."""
         _LOGGER.debug("Set %s focus mode %s", self.name, fan_mode)
-        self._api.login()
+    
         self._api.set_device(
             self._device['id'],
             fanSpeed = self._constants.FanSpeed[fan_mode]
         )
 
+    @api_call_login
     def set_operation_mode(self, operation_mode):
         """Set operation mode."""
         _LOGGER.debug("Set %s mode %s", self.name, operation_mode)
-        self._api.login()
+
         self._api.set_device(
             self._device['id'],
             mode = self._constants.OperationMode[OPERATION_LIST[operation_mode]]
         )
 
+    @api_call_login
     def set_swing_mode(self, swing_mode):
         """Set swing mode."""
         _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
-        self._api.login()
         self._api.set_device(
             self._device['id'],
             airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
 
+    @api_call_login
     def turn_on(self):
         """Turn device on."""
-        self._api.login()
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On
         )
 
+    @api_call_login
     def turn_off(self):
         """Turn device on."""
-        self._api.login()
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.Off
