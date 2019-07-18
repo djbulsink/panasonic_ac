@@ -128,12 +128,6 @@ class PanasonicDevice(ClimateDevice):
         self._airswing_vert = data['parameters']['airSwingVertical'].name
         self._eco = data['parameters']['eco'].name
 
-    # TODO removed (implement HVAC_MODE_HEAT + HVAC_MODE_OFF instead)
-    @property
-    def is_on(self):
-        """Return is device is on."""
-        return self._is_on
-
     @property
     def supported_features(self):
         """Return the list of supported features."""
@@ -159,7 +153,6 @@ class PanasonicDevice(ClimateDevice):
         """Return the target temperature."""
         return self._target_temp
 
-    # TODO
     @property
     def hvac_mode(self):
         """Return the current operation."""
@@ -254,8 +247,6 @@ class PanasonicDevice(ClimateDevice):
             self._device['id'],
             airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
-
-
 
     @property
     def min_temp(self):
