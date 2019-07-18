@@ -178,7 +178,7 @@ class PanasonicDevice(ClimateDevice):
         return self._current_fan
 
     @property
-    def fan_list(self):
+    def fan_modes(self):
         """Return the list of available fan modes."""
         return [f.name for f in self._constants.FanSpeed ]
 
