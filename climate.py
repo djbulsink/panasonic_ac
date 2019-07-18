@@ -166,9 +166,10 @@ class PanasonicDevice(ClimateDevice):
         return self.get(ATTR_HVAC_MODE)
 
     @property
-    def operation_list(self):
+    def hvac_modes(self):
         """Return the list of available operation modes."""
-        return list(OPERATION_LIST.keys())
+        # return list(OPERATION_LIST.keys())
+        return self._list.get(ATTR_HVAC_MODE)
 
     @property
     def fan_mode(self):
