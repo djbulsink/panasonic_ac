@@ -60,7 +60,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     api = pcomfortcloud.Session(username, password, verifySsl=False)
     api.login()
 
-    # Get panasonic Devices from api.
     _LOGGER.debug("Adding panasonic devices")
 
     devices = []
