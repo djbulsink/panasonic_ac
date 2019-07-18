@@ -173,7 +173,7 @@ class PanasonicDevice(ClimateDevice):
         return list(OPERATION_LIST.keys())
 
     @property
-    def current_fan_mode(self):
+    def fan_mode(self):
         """Return the fan setting."""
         return self._current_fan
 
