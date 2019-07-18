@@ -183,7 +183,7 @@ class PanasonicDevice(ClimateDevice):
         return [f.name for f in self._constants.FanSpeed ]
 
     @property
-    def current_swing_mode(self):
+    def swing_mode(self):
         """Return the fan setting."""
         return self._airswing_hor
 
