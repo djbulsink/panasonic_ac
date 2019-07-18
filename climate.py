@@ -134,14 +134,6 @@ class PanasonicDevice(ClimateDevice):
         """Return is device is on."""
         return self._is_on
 
-    # TODO
-    @property
-    def hvac_mode(self):
-        """Return the current operation."""
-        for key, value in OPERATION_LIST.items():
-            if value == self._hvac_mode:
-                return key
-
     @property
     def supported_features(self):
         """Return the list of supported features."""
@@ -166,6 +158,12 @@ class PanasonicDevice(ClimateDevice):
     def target_temperature(self):
         """Return the target temperature."""
         return self._target_temp
+
+    # TODO
+    @property
+    def hvac_mode(self):
+        """Return the current operation."""
+        return self.get(ATTR_HVAC_MODE)
 
     @property
     def operation_list(self):
