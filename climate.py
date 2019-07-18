@@ -168,8 +168,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def hvac_modes(self):
         """Return the list of available operation modes."""
-        # return list(OPERATION_LIST.keys())
-        return self._list.get(ATTR_HVAC_MODE)
+        return list(OPERATION_LIST.keys())
 
     @property
     def fan_mode(self):
@@ -227,13 +226,13 @@ class PanasonicDevice(ClimateDevice):
         )
 
     @api_call_login
-    def set_operation_mode(self, operation_mode):
+    def set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
-        _LOGGER.debug("Set %s mode %s", self.name, operation_mode)
+        _LOGGER.debug("Set %s mode %s", self.name, hvac_mode)
 
         self._api.set_device(
             self._device['id'],
-            mode = self._constants.OperationMode[OPERATION_LIST[operation_mode]]
+            mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
         )
 
     @api_call_login
