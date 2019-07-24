@@ -9,11 +9,7 @@ from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
     HVAC_MODE_DRY, HVAC_MODE_FAN_ONLY, HVAC_MODE_OFF,
-<<<<<<< HEAD
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
-=======
     SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, SUPPORT_SWING_MODE,
->>>>>>> upstream/master
     ATTR_CURRENT_TEMPERATURE, ATTR_FAN_MODE,
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
@@ -32,10 +28,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 OPERATION_LIST = {
-<<<<<<< HEAD
-=======
     HVAC_MODE_OFF: 'Off',
->>>>>>> upstream/master
     HVAC_MODE_HEAT: 'Heat',
     HVAC_MODE_COOL: 'Cool',
     HVAC_MODE_HEAT_COOL: 'Auto',
@@ -135,16 +128,7 @@ class PanasonicDevice(ClimateDevice):
         self._airswing_vert = data['parameters']['airSwingVertical'].name
         self._eco = data['parameters']['eco'].name
 
-    # TODO removed (implement HVAC_MODE_HEAT + HVAC_MODE_OFF instead)
     @property
-<<<<<<< HEAD
-    def is_on(self):
-        """Return is device is on."""
-        return self._is_on
-
-    @property
-=======
->>>>>>> upstream/master
     def supported_features(self):
         """Return the list of supported features."""
         return SUPPORT_FLAGS
@@ -169,15 +153,7 @@ class PanasonicDevice(ClimateDevice):
         """Return the target temperature."""
         return self._target_temp
 
-    # TODO
     @property
-    def hvac_mode(self):
-        """Return the current operation."""
-        return self.get(ATTR_HVAC_MODE)
-
-    @property
-<<<<<<< HEAD
-=======
     def hvac_mode(self):
         """Return the current operation."""
         if not self._is_on:
@@ -188,7 +164,6 @@ class PanasonicDevice(ClimateDevice):
                 return key
 
     @property
->>>>>>> upstream/master
     def hvac_modes(self):
         """Return the list of available operation modes."""
         return list(OPERATION_LIST.keys())
@@ -252,13 +227,6 @@ class PanasonicDevice(ClimateDevice):
     def set_hvac_mode(self, hvac_mode):
         """Set operation mode."""
         _LOGGER.debug("Set %s mode %s", self.name, hvac_mode)
-<<<<<<< HEAD
-
-        self._api.set_device(
-            self._device['id'],
-            mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
-        )
-=======
         if hvac_mode == HVAC_MODE_OFF:
             self._api.set_device(
                 self._device['id'],
@@ -270,7 +238,6 @@ class PanasonicDevice(ClimateDevice):
                 self._device['id'],
                 mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
             )
->>>>>>> upstream/master
 
     @api_call_login
     def set_swing_mode(self, swing_mode):
@@ -281,35 +248,6 @@ class PanasonicDevice(ClimateDevice):
             airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
 
-<<<<<<< HEAD
-    # TODO remove in favor of set_preset_mode
-    @api_call_login
-    def turn_on(self):
-        """Turn device on."""
-        self._api.set_device(
-            self._device['id'],
-            power = self._constants.Power.On
-        )
-
-    # TODO remove in favor of set_preset_mode
-    @api_call_login
-    def turn_off(self):
-        """Turn device on."""
-        self._api.set_device(
-            self._device['id'],
-            power = self._constants.Power.Off
-        )
-
-    # TODO to be implemented
-    @api_call_login
-    def set_preset_mode(self):
-        self._api.set_device(
-            self._device['id'],
-            # TODO
-        )
-
-=======
->>>>>>> upstream/master
     @property
     def min_temp(self):
         """Return the minimum temperature."""
