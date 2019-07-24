@@ -1,13 +1,16 @@
 # Panasonic Comfort Cloud HA component
 
-A home assistant custom climate component to control Panasonic airconditioners and heatpumps. 
+A home assistant custom climate component to control Panasonic airconditioners and heatpumps.
 
 This component uses the library `pcomfortcloud`
 
 https://github.com/lostfields/python-panasonic-comfort-cloud
 
 ## Usage
-Copy climate.py and manifest.json to the `custom_components/panasonic_ac/` folder. And add the following configuration in `configuration.yml` 
+- Copy `__init__.py`, `climate.py`, and `manifest.json` to the `custom_components/panasonic_ac/` folder.
+- Add the following configuration in `configuration.yml`
+
+As an alternative, you can also install the component via the [Home Assistant Community Store (HACS)](https://custom-components.github.io/hacs/) by adding it manually.
 
 ```yaml
 climate:
