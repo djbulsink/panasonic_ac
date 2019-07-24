@@ -3,6 +3,6 @@
   "name": "Panasonic AC",
   "documentation": "https://github.com/djbulsink/panasonic_ac/",
   "dependencies": [],
-  "codeowners": ["Djbulsink"],
+  "codeowners": ["Djbulsink", "SeraphimSerapis"],
   "requirements": ["pcomfortcloud==0.0.13"]
 }
