@@ -236,6 +236,7 @@ class PanasonicDevice(ClimateDevice):
 
             self._api.set_device(
                 self._device['id'],
+                power = self._constants.Power.On,
                 mode = self._constants.OperationMode[OPERATION_LIST[hvac_mode]]
             )
 
@@ -245,6 +246,7 @@ class PanasonicDevice(ClimateDevice):
         _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
         self._api.set_device(
             self._device['id'],
+            power = self._constants.Power.On,
             airSwingVertical = self._constants.AirSwingUD[swing_mode]
         )
 
