@@ -12,7 +12,6 @@ from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
     SUPPORT_SWING_MODE, SUPPORT_PRESET_MODE,
     ATTR_CURRENT_TEMPERATURE, ATTR_FAN_MODE,
-    PRESET_ECO, PRESET_NONE, PRESET_BOOST, 
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
@@ -38,11 +37,7 @@ OPERATION_LIST = {
     HVAC_MODE_FAN_ONLY: 'Fan'
     }
 
-PRESET_LIST = {
-    PRESET_NONE: 'Auto',
-    PRESET_BOOST: 'Powerful',
-    PRESET_ECO: 'Quiet'
-}
+PRESET_LIST = ["Auto", "Powerful", "Quiet"]
 
 SUPPORT_FLAGS = (
     SUPPORT_TARGET_TEMPERATURE |
@@ -213,10 +208,9 @@ class PanasonicDevice(ClimateDevice):
         """Return the current preset mode, e.g., home, away, temp.
         Requires SUPPORT_PRESET_MODE.
         """
-        for key, value in PRESET_LIST.items():
-            if value == self._eco:
-                _LOGGER.debug("Preset mode is {0}".format(key))
-                return key
+        value = self._eco
+        _LOGGER.debug("Preset mode is {0}".format(value))
+        return value
 
 
     @property
@@ -224,8 +218,8 @@ class PanasonicDevice(ClimateDevice):
         """Return a list of available preset modes.
         Requires SUPPORT_PRESET_MODE.
         """
-        _LOGGER.debug("Preset modes are {0}".format(",".join(PRESET_LIST.keys())))
-        return list(PRESET_LIST.keys())
+        _LOGGER.debug("Preset modes are {0}".format(",".join(PRESET_LIST)))
+        return PRESET_LIST
 
     @api_call_login
     def set_preset_mode(self, preset_mode: str) -> None:
@@ -234,7 +228,7 @@ class PanasonicDevice(ClimateDevice):
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On,
-            eco = self._constants.EcoMode[ PRESET_LIST[preset_mode] ]
+            eco = self._constants.EcoMode[ preset_mode ]
         )
 
 
