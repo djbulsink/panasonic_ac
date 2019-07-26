@@ -225,7 +225,7 @@ class PanasonicDevice(ClimateDevice):
         Requires SUPPORT_PRESET_MODE.
         """
         _LOGGER.debug("Preset modes are {0}".format(",".join(PRESET_LIST.keys())))
-        return PRESET_LIST.keys()
+        return list(PRESET_LIST.keys())
 
     @api_call_login
     def set_preset_mode(self, preset_mode: str) -> None:
