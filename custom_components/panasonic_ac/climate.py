@@ -1,7 +1,7 @@
 import logging
 import voluptuous as vol
 from datetime import timedelta
-
+from typing import Any, Dict, Optional, List
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
@@ -9,8 +9,10 @@ from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
     HVAC_MODE_DRY, HVAC_MODE_FAN_ONLY, HVAC_MODE_OFF,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, SUPPORT_SWING_MODE,
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
+    SUPPORT_SWING_MODE, SUPPORT_PRESET_MODE,
     ATTR_CURRENT_TEMPERATURE, ATTR_FAN_MODE,
+    PRESET_ECO, PRESET_NONE, PRESET_BOOST, 
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
@@ -36,9 +38,17 @@ OPERATION_LIST = {
     HVAC_MODE_FAN_ONLY: 'Fan'
     }
 
+PRESET_LIST = {
+    PRESET_NONE: 'Auto',
+    PRESET_BOOST: 'Powerful',
+    PRESET_ECO: 'Quiet'
+}
+
 SUPPORT_FLAGS = (
     SUPPORT_TARGET_TEMPERATURE |
-    SUPPORT_FAN_MODE)
+    SUPPORT_FAN_MODE |
+    SUPPORT_PRESET_MODE |
+    SUPPORT_SWING_MODE )
 
 def api_call_login(func):
     def wrapper_call(*args, **kwargs):
@@ -87,7 +97,7 @@ class PanasonicDevice(ClimateDevice):
         self._cur_temp = None
         self._outside_temp = None
         self._mode = None
-        self._eco = None
+        self._eco = 'Auto'
 
         self._current_fan = None
         self._airswing_hor = None
@@ -197,6 +207,36 @@ class PanasonicDevice(ClimateDevice):
     def outside_temperature(self):
         """Return the current temperature."""
         return self._outside_temp
+
+    @property
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp.
+        Requires SUPPORT_PRESET_MODE.
+        """
+        for key, value in PRESET_LIST.items():
+            if value == self._eco:
+                _LOGGER.debug("Preset mode is {0}".format(key))
+                return key
+
+
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes.
+        Requires SUPPORT_PRESET_MODE.
+        """
+        _LOGGER.debug("Preset modes are {0}".format(",".join(PRESET_LIST.keys())))
+        return list(PRESET_LIST.keys())
+
+    @api_call_login
+    def set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+        _LOGGER.debug("Set %s ecomode %s", self.name, preset_mode)
+        self._api.set_device(
+            self._device['id'],
+            power = self._constants.Power.On,
+            eco = self._constants.EcoMode[ PRESET_LIST[preset_mode] ]
+        )
+
 
     @api_call_login
     def set_temperature(self, **kwargs):
