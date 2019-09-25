@@ -191,7 +191,7 @@ class PanasonicDevice(ClimateDevice):
     @property
     def swing_mode(self):
         """Return the fan setting."""
-        return self._airswing_hor
+        return self._airswing_vert
 
     @property
     def swing_modes(self):
@@ -284,10 +284,18 @@ class PanasonicDevice(ClimateDevice):
     def set_swing_mode(self, swing_mode):
         """Set swing mode."""
         _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
+        if swing_mode == 'Auto':
+            automode = self._constants.AirSwingAutoMode["AirSwingUD"]
+        else:
+            automode = self._constants.AirSwingAutoMode["Disabled"]
+
+        _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode, automode)
+
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On,
-            airSwingVertical = self._constants.AirSwingUD[swing_mode]
+            airSwingVertical = self._constants.AirSwingUD[swing_mode],
+            fanAutoMode = automode
         )
 
     @property
