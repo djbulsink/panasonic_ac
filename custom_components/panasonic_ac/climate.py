@@ -248,7 +248,7 @@ class PanasonicDevice(ClimateDevice):
         _LOGGER.debug("Set %s temperature %s", self.name, target_temp)
 
         self._api.set_device(
-            self._device['id']
+            self._device['id'],
             temperature = target_temp
         )
 
