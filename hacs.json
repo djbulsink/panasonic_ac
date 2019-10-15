@@ -1,0 +1,5 @@
+{
+  "name": "Panasonic Comfort Cloud HA component",
+  "domains": ["climate"],
+  "homeassistant": "0.96.0"
+}
