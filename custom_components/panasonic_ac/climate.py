@@ -1,10 +1,8 @@
 import logging
-import voluptuous as vol
 from datetime import timedelta
 from typing import Any, Dict, Optional, List
-import homeassistant.helpers.config_validation as cv
 
-from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
+from homeassistant.components.climate import ClimateDevice
 
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
@@ -20,14 +18,10 @@ from homeassistant.const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = 'panasonic_ac'
+from . import DOMAIN
 
 SCAN_INTERVAL = timedelta(seconds=300)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_USERNAME): cv.string,
-    vol.Required(CONF_PASSWORD): cv.string,
-})
 
 OPERATION_LIST = {
     HVAC_MODE_OFF: 'Off',
@@ -59,16 +53,9 @@ def api_call_login(func):
             func(*args, **kwargs)
     return wrapper_call
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    import pcomfortcloud
+def setup_platform(hass, entry, add_entities):
     from pcomfortcloud import constants
-
-    """Set up the panasonic cloud components."""
-    username = config.get(CONF_USERNAME)
-    password = config.get(CONF_PASSWORD)
-
-    api = pcomfortcloud.Session(username, password, verifySsl=False)
-    api.login()
+    api = hass.data[DOMAIN].get(api)
 
     _LOGGER.debug("Adding panasonic devices")
 
@@ -95,7 +82,6 @@ class PanasonicDevice(ClimateDevice):
         self._unit = TEMP_CELSIUS
         self._target_temp = None
         self._cur_temp = None
-        self._outside_temp = None
         self._mode = None
         self._eco = 'Auto'
 
@@ -125,11 +111,6 @@ class PanasonicDevice(ClimateDevice):
             self._cur_temp = data['parameters']['temperatureInside']
         else:
             self._cur_temp = None
-
-        if data['parameters']['temperatureOutside'] != 126:
-            self._outside_temp = data['parameters']['temperatureOutside']
-        else:
-            self._outside_temp = None
 
         self._is_on =bool( data['parameters']['power'].value )
         self._hvac_mode = data['parameters']['mode'].name
@@ -202,11 +183,6 @@ class PanasonicDevice(ClimateDevice):
     def current_temperature(self):
         """Return the current temperature."""
         return self._cur_temp
-
-    @property
-    def outside_temperature(self):
-        """Return the current temperature."""
-        return self._outside_temp
 
     @property
     def preset_mode(self) -> Optional[str]:
