@@ -111,6 +111,14 @@ class PanasonicDevice(ClimateDevice):
         else:
             self._cur_temp = None
 
+        if self._device['id'] not in self.hass.data[DOMAIN]:
+            self.hass.data[DOMAIN][self._device['id']] = {}
+
+        if data['parameters']['temperatureOutside'] != 126:
+            self.hass.data[DOMAIN][self._device['id']]['outside_temp'] = data['parameters']['temperatureOutside']
+        else:
+            self.hass.data[DOMAIN][self._device['id']]['outside_temp'] = None
+
         self._is_on =bool( data['parameters']['power'].value )
         self._hvac_mode = data['parameters']['mode'].name
         self._current_fan = data['parameters']['fanSpeed'].name

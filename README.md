@@ -11,8 +11,8 @@ https://github.com/lostfields/python-panasonic-comfort-cloud
 - Add the following configuration in `configuration.yaml`:
 
 ```yaml
-climate:
-  - platform: panasonic_ac
-    username: !secret user
-    password: !secret password
+
+panasonic_ac:
+  username: !secret user
+  password: !secret password
 ```
