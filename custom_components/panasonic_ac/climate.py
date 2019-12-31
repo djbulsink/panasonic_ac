@@ -14,14 +14,13 @@ from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
-    TEMP_CELSIUS, ATTR_TEMPERATURE, CONF_USERNAME, CONF_PASSWORD)
+    TEMP_CELSIUS, ATTR_TEMPERATURE)
 
 _LOGGER = logging.getLogger(__name__)
 
 from . import DOMAIN
 
 SCAN_INTERVAL = timedelta(seconds=300)
-
 
 OPERATION_LIST = {
     HVAC_MODE_OFF: 'Off',
@@ -53,9 +52,9 @@ def api_call_login(func):
             func(*args, **kwargs)
     return wrapper_call
 
-def setup_platform(hass, entry, add_entities):
+def setup_platform(hass, entry, add_entities, discovery_info=None):
     from pcomfortcloud import constants
-    api = hass.data[DOMAIN].get(api)
+    api = hass.data[DOMAIN].get('api')
 
     _LOGGER.debug("Adding panasonic devices")
 
