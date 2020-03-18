@@ -134,8 +134,17 @@ class PanasonicDevice(ClimateDevice):
         self._is_on =bool( data['parameters']['power'].value )
         self._hvac_mode = data['parameters']['mode'].name
         self._current_fan = data['parameters']['fanSpeed'].name
-        self._airswing_hor = data['parameters']['airSwingHorizontal'].name
-        self._airswing_vert = data['parameters']['airSwingVertical'].name
+
+        try:
+            self._airswing_hor = data['parameters']['airSwingHorizontal'].name
+        except ValueError:
+            self._airswing_hor = None
+
+        try:
+            self._airswing_vert = data['parameters']['airSwingVertical'].name
+        except ValueError:
+            self._airswing_vert = None
+        
         self._eco = data['parameters']['eco'].name
 
     @property
