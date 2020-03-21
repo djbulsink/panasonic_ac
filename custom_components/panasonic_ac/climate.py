@@ -97,6 +97,8 @@ class PanasonicDevice(ClimateDevice):
             self._api.login()
             data = self._api.get_device(self._device['id'])
 
+        _LOGGER.debug("Received no data for device {0}".format(data['parameters']))
+
         if data is None:
             _LOGGER.debug("Received no data for device {id}".format(**self._device))
             return
@@ -112,7 +114,7 @@ class PanasonicDevice(ClimateDevice):
             self._cur_temp = None
 
         if self._device['id'] not in self.hass.data[DOMAIN]:
-            self.hass.data[DOMAIN][self._device['id']] = {}
+           self.hass.data[DOMAIN][self._device['id']] = {}
 
         if data['parameters']['temperatureOutside'] != 126:
             self.hass.data[DOMAIN][self._device['id']]['outside_temp'] = data['parameters']['temperatureOutside']
@@ -122,9 +124,29 @@ class PanasonicDevice(ClimateDevice):
         self._is_on =bool( data['parameters']['power'].value )
         self._hvac_mode = data['parameters']['mode'].name
         self._current_fan = data['parameters']['fanSpeed'].name
-        self._airswing_hor = data['parameters']['airSwingHorizontal'].name
+        try:
+            self._airswing_hor = data['parameters']['airSwingHorizontal'].name
+        except ValueError:
+            self._airswing_hor = None
+
         self._airswing_vert = data['parameters']['airSwingVertical'].name
         self._eco = data['parameters']['eco'].name
+        
+
+    @property
+    def device_state_attributes(self) -> Optional[Dict[str, Any]]:
+        """Return the optional state attributes with device specific additions."""
+        attr = {}
+
+        swing_horizontal = self._airswing_hor
+        if swing_horizontal:
+            attr.update(
+                {
+                    "swing_horizontal": swing_horizontal,
+                    "swing_horizontal_positions": [f.name for f in self._constants.AirSwingLR ],
+                }
+            )
+        return attr
 
     @property
     def supported_features(self):
@@ -201,7 +223,6 @@ class PanasonicDevice(ClimateDevice):
                 _LOGGER.debug("Preset mode is {0}".format(key))
                 return key
 
-
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return a list of available preset modes.
@@ -266,17 +287,42 @@ class PanasonicDevice(ClimateDevice):
     def set_swing_mode(self, swing_mode):
         """Set swing mode."""
         _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode)
+        if swing_mode == 'Auto' and self._airswing_hor == 'Auto':
+            automode = self._constants.AirSwingAutoMode["Both"]
         if swing_mode == 'Auto':
             automode = self._constants.AirSwingAutoMode["AirSwingUD"]
         else:
             automode = self._constants.AirSwingAutoMode["Disabled"]
 
-        _LOGGER.debug("Set %s swing mode %s", self.name, swing_mode, automode)
+        _LOGGER.debug(f"Set {self.name} swing_mode: {swing_mode} automode: {automode}")
 
         self._api.set_device(
             self._device['id'],
             power = self._constants.Power.On,
             airSwingVertical = self._constants.AirSwingUD[swing_mode],
+            fanAutoMode = automode
+        )
+
+    @api_call_login
+    def set_swing_horizontal(self, position: str) -> None:
+        """Set horizontal swing position."""
+        if swing_mode not in [f.name for f in self._constants.AirSwingLR ]:
+            raise ValueError(
+                f"Unsupported horizontal swing position {position}. Check the available modes from state attributes."
+            )
+
+        if swing_mode == 'Auto' and self._airswing_vert == 'Auto':
+            automode = self._constants.AirSwingAutoMode["Both"]
+        if swing_mode == 'Auto':
+            automode = self._constants.AirSwingAutoMode["AirSwingLR"]
+        else:
+            automode = self._constants.AirSwingAutoMode["Disabled"]
+
+        _LOGGER.debug(f"Set {self.name} swing_mode: {swing_mode} automode: {automode}")
+
+        self._api.set_device(
+            self._device['id'],
+            airSwingHorizontal = self._constants.AirSwingLR[position],
             fanAutoMode = automode
         )
 
