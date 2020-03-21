@@ -1,0 +1,11 @@
+set_swing_horizontal:
+  description: Sets horizontal swing position.
+  fields:
+    entity_id:
+      description: Name of the target entity
+      example: "climate.ac_1"
+    position:
+      description: >
+        Horizontal swing position. Possible options can be found from
+        swing_horizontal_positions state attribute.
+      example: "Auto"
