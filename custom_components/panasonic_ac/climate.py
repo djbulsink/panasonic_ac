@@ -4,15 +4,15 @@ from datetime import timedelta
 from typing import Any, Dict, Optional, List
 import homeassistant.helpers.config_validation as cv
 
-from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
+from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateEntity
 
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
     HVAC_MODE_DRY, HVAC_MODE_FAN_ONLY, HVAC_MODE_OFF,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
     SUPPORT_SWING_MODE, SUPPORT_PRESET_MODE,
     ATTR_CURRENT_TEMPERATURE, ATTR_FAN_MODE,
-    PRESET_ECO, PRESET_NONE, PRESET_BOOST, 
+    PRESET_ECO, PRESET_NONE, PRESET_BOOST,
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
@@ -79,7 +79,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     add_entities(devices, True)
 
-class PanasonicDevice(ClimateDevice):
+class PanasonicDevice(ClimateEntity):
     """Representation of a Panasonic airconditioning."""
 
     def __init__(self, device, api, constants):
