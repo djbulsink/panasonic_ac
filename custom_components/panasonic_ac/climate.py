@@ -149,6 +149,11 @@ class PanasonicDevice(ClimateEntity):
         return self._device['name']
 
     @property
+    def unique_id(self):
+        """Return the unique id of this climate."""
+        return self._device['id']
+
+    @property
     def group(self):
         """Return the display group of this climate."""
         return self._device['group']
