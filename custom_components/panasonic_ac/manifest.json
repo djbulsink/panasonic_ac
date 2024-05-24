@@ -4,6 +4,6 @@
   "documentation": "https://github.com/djbulsink/panasonic_ac/",
   "dependencies": [],
   "codeowners": ["Djbulsink", "SeraphimSerapis"],
-  "requirements": ["pcomfortcloud==0.0.25"],
+  "requirements": ["pcomfortcloud==0.0.27"],
   "version": "1.0.1"
 }
